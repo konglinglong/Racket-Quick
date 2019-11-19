@@ -7,10 +7,11 @@ by Matthew Flatt
 
 我们假设您将使用DrRacket运行示例。使用DrRacket是了解语言和系统感觉的最快方法，即使您最终在Emacs、vi或其他编辑器中使用Racket。
 
-1. 准备
+**1. 准备**
 
 下载Racket，安装，然后启动DrRacket。
-2. 设置
+
+**2. 设置**
 
 有关DrRacket IDE的简要概述，请参阅DrRacket文档。
 
@@ -24,7 +25,7 @@ by Matthew Flatt
 
 如果你以前使用过DrRacket，你可能需要通过菜单中的语言|选择语言，选择“使用源中声明的语言”来重新设置DrRacket使用的语言。
 
-3. 开始
+**3. 开始**
 
 当您在交互窗口中的>后面键入表达式并按回车时，DrRacket将计算该表达式并打印其结果。表达式可以只是一个值，比如数字5或字符串“art gallery”:
 
@@ -73,7 +74,7 @@ hc-append名称中的连字符只是标识符的一部分;它不是hc - append�
 
 如果你想知道还有什么其他的功能——也许是一种垂直和左对齐堆叠图片的方法?将文本插入符号移动到名称hc-append，并在DrRacket中按F1键。将打开一个浏览器窗口，它将提供指向hc-append文档的链接。点击链接，您将看到许多其他功能。
 
-4. 定义
+**4. 定义**
 
 要多次使用特定的圆形和矩形，更简单的方法是为它们命名。回到定义区域(顶部区域)并添加两个定义，这样定义区域的完整内容如下所示:
 
@@ -119,7 +120,7 @@ hc-append名称中的连字符只是标识符的一部分;它不是hc - append�
 
 不管是交互区还是定义区，上面的表达式都能被执行。当程序运行时，来自定义区域的表达式结果显示在交互区域中。从现在开始，我们示例中的定义和表达式写在一起，因为这些示例将相互构建。
 
-5. 本地绑定
+**5. 本地绑定**
 
 定义表单可以在某些地方用于创建本地绑定。例如，它可以在函数体中使用:
 
@@ -167,7 +168,7 @@ let可以一次绑定多个定义，但这些定义不能相互引用。而let*�
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_10.png)
 
-6. 函数也是值
+**6. 函数也是值**
 
 不要把circle作为一个函数调用，而是把circle作为一个表达式来计算:
 
@@ -210,7 +211,8 @@ A define form for a function is really a shorthand for a simple define using lam
         (hc-append 4 (mk 5) (mk 10) (mk 20))))
 
 Most Racketeers prefer to use the shorthand function form with define instead of expanding to lambda.
-7 Lexical Scope
+
+**7. Lexical Scope**
 
 Racket is a lexically scoped language, which means that whenever an identifier is used as an expression, something in the textual environment of the expression determines the identifier’s binding. This rule applies to identifiers in a lambda body as well as anywhere else.
 
@@ -247,7 +249,8 @@ Here’s another example, where rgb-maker takes a function and returns a new one
     image
 
 Note how composing functions via rgb-maker creates a different alignment of objects within the picture compared to using rgb-series.
-8 Lists
+
+**8. Lists**
 
 Racket inherits much of its style from the language Lisp, whose name originally stood for “LISt Processor,” and lists remain an important part of Racket.
 
@@ -281,7 +284,8 @@ Another function that works with lists is apply. Like map, it takes a function a
     image
 
 Note that (vc-append (rainbow (square 5))) would not work, because vc-append does not want a list as an argument; it wants a picture as an argument, and it is willing to accept any number of them. The apply function bridges the gap between a function that wants many arguments and a list of those arguments as a single value.
-9 Modules
+
+**9. Modules**
 
 Since your program in the definitions window starts with
 
@@ -321,7 +325,8 @@ Modules are named and distributed in various ways:
     and when you run "use.rkt", a rainbow list of squares is the output. Note that "use.rkt" is written using the initial import racket, which does not supply any picture-making functions itself—but does provide require and the function-calling syntax.
 
 Racketeers typically write new programs and libraries as modules that import each other through relative paths and collection-based paths. When a program or library developed this way seems useful to others, it can be registered as a package, especially if the implementation is hosted in a Git repository.
-10 Macros
+
+**10. Macros**
 
 Here’s another library to try:
 
@@ -355,7 +360,8 @@ This kind of definition is a macro. The (pict+code expr) part is a pattern for u
 Of course, this sort of syntactic extension cuts both ways: inventing a new language can make it easier to say what you want, but harder for others to understand. As it happens, the developers of Racket are constantly giving talks and writing papers that involve Racket code, and it’s worthwhile for everyone who works on those products to know about code.
 
 In fact, you might want to take a look at the source of this document. You’ll see that it starts with #lang, but otherwise doesn’t look a lot like Racket; nevertheless, we build this document by running its source as a Racket program. We have to use a lot more than syntax-rules to extend Racket’s syntax enough for writing documents, but Racket’s syntactic extension can take you a long way.
-11 Objects
+
+**11. Objects**
 
 An object system is another example of a sophisticated language extension that is worth learning and using for Racket users. Objects are sometimes better than functions, even when you have lambda, and objects work especially well for graphical user interfaces. The API for Racket’s GUI and graphics system is expressed in terms of objects and classes.
 
@@ -393,7 +399,8 @@ Pictures generated with slideshow encapsulate a function that uses the graphics 
     [image]
 
 Each canvas stretches to fill an equal portion of the frame, because that’s how a frame manages its children by default.
-12 Where to Go From Here
+
+**12. Where to Go From Here**
 
 This introduction to Racket purposely avoids many of the traditional ways of introducing and distinguishing Lisp or Scheme: prefix arithmetic notation, symbols, quoting and quasiquoting lists, eval, first-class continuations, and the idea that all syntax is really just a lambda in disguise. While those are all part of Racket, they are not the main ingredients of day-to-day programming in Racket.
 
