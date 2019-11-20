@@ -150,9 +150,6 @@ hc-append名称中的连字符只是标识符的一部分;它不是hc - append�
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_9.png)
 
-
-A let form binds many identifiers at the same time, so the bindings cannot refer to each other. The let* form, in contrast, allows later bindings to use earlier bindings:
-
 let可以一次绑定多个定义，但这些定义不能相互引用。而let*则允许后面的定义使用前面的定义:
 
 ```
@@ -178,77 +175,83 @@ let可以一次绑定多个定义，但这些定义不能相互引用。而let*�
     #<procedure:circle>
 ```
 
-That is, the identifier circle is bound to a function (a.k.a. “procedure”), just like c is bound to a circle. Unlike a circle picture, there’s not a simple way of completely printing the function, so DrRacket just prints #<procedure:circle>.
+也就是说，标识符circle被绑定到一个函数，就像c被绑定到一个圆一样。与圆形图不同，没有一种简单的方法可以完全打印函数，所以DrRacket只打印#<procedure:circle>。
+这个例子显示了函数是值，就像数字和图片一样(即使它们不能很好地打印)。因为函数是值，你可以将函数作为其他函数的参数:
 
-This example shows that functions are values, just like numbers and pictures (even if they don’t print as nicely). Since functions are values, you can define functions that accept other functions as arguments:
 
-也就是说，标识符circle被绑定到一个函数(也称为“过程”)，就像c被绑定到一个圆一样。与圆形图不同，没有一种简单的方法可以完全打印函数，所以dr球拍只打印#<procedure:circle>。
-这个例子显示了函数是值，就像数字和图片一样(即使它们不能很好地打印)。因为函数是值，你可以定义函数接受其他函数作为参数:
-
-    (define (series mk)
+```
+(define (series mk)
       (hc-append 4 (mk 5) (mk 10) (mk 20)))
-
      
     > (series circle)
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_11.png)
 
-    image
-    > (series square)
+```
+> (series square)
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_12.png)
 
-    image
+当一个函数仅仅作为参数，而其他地方没有用到时，还要通过define将函数写下来是一件麻烦事，因为你必须创建一个名称并找到放置函数定义的位置。另一种更好的选择是使用lambda，它创建了一个匿名函数:
 
-When calling a function that accepts a function argument, the argument function often isn’t needed anywhere else. Having to write down the function via define would be a hassle, because you have to make up a name and find a place to put the function definition. The alternative is to use lambda, which creates an anonymous function:
+```
+> (series (lambda (size) (checkerboard (square size))))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_13.png)
 
-    > (series (lambda (size) (checkerboard (square size))))
+lambda后面括号内是函数的参数，紧接后面的表达式是函数体。用“lambda”代替“功能”或“过程”是Racket历史和文化的一部分。
+函数的定义形式实际上是使用lambda作为值的简单定义的简写。例如，series定义可以写成
 
-    image
-
-The parenthesized names after a lambda are the arguments to the function, and the expression after the argument names is the function body. Using the word “lambda” instead of “function” or “procedure” is part of Racket’s history and culture.
-
-A define form for a function is really a shorthand for a simple define using lambda as the value. For example, the series definition could be written as
-
-    (define series
+```
+(define series
       (lambda (mk)
         (hc-append 4 (mk 5) (mk 10) (mk 20))))
+```
 
-Most Racketeers prefer to use the shorthand function form with define instead of expanding to lambda.
+大多Racket程序员更喜欢使用带有define的简写函数形式，而不是扩展到lambda。
 
-**7. Lexical Scope**
+**7. 词法作用域**
 
-Racket is a lexically scoped language, which means that whenever an identifier is used as an expression, something in the textual environment of the expression determines the identifier’s binding. This rule applies to identifiers in a lambda body as well as anywhere else.
+Racket是一种词法限定的语言，这意味着无论何时将标识符用作表达式，表达式的文本环境中的某些东西都会决定该标识符的绑定。此规则适用于lambda主体中的标识符，也适用于其他任何地方。
+在下面的rgb-series函数中，mk在每个lambda形式中的使用都引用了rgb-series的参数，因为这是在作用域中的文本绑定:
 
-In the following rgb-series function, the uses of mk in each lambda form refer to the argument of rgb-series, since that’s the binding that is textually in scope:
-
-    (define (rgb-series mk)
+```
+(define (rgb-series mk)
       (vc-append
        (series (lambda (sz) (colorize (mk sz) "red")))
        (series (lambda (sz) (colorize (mk sz) "green")))
        (series (lambda (sz) (colorize (mk sz) "blue")))))
-
      
     > (rgb-series circle)
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_14.png)
 
-    image
+```
     > (rgb-series square)
-
-    image
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_15.png)
 
 Here’s another example, where rgb-maker takes a function and returns a new one that remembers and uses the original function.
 
-    (define (rgb-maker mk)
+这里是另一个例子，其中rgb-maker获取一个函数并返回一个新的函数，该函数记住并使用原始函数。
+
+```
+(define (rgb-maker mk)
       (lambda (sz)
         (vc-append (colorize (mk sz) "red")
                    (colorize (mk sz) "green")
                    (colorize (mk sz) "blue"))))
-
      
     > (series (rgb-maker circle))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_16.png)
 
-    image
+```
     > (series (rgb-maker square))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_17.png)
 
-    image
-
-Note how composing functions via rgb-maker creates a different alignment of objects within the picture compared to using rgb-series.
+请注意，与使用rgb-series相比，通过rgb-maker组合函数如何在图片中创建不同的对象对齐方式。
 
 **8. Lists**
 
