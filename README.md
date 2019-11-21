@@ -1,5 +1,5 @@
 
-# 快速浏览：Racket图文教程
+# Racket快速浏览
 by Matthew Flatt
 
 
@@ -129,9 +129,8 @@ hc-append名称中的连字符只是标识符的一部分;它不是hc - append�
 (define (four p)
       (define two-p (hc-append p p))
       (vc-append two-p two-p))
-
      
-    > (four (circle 10))
+> (four (circle 10))
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_8.png)
 
@@ -143,10 +142,9 @@ hc-append名称中的连字符只是标识符的一部分;它不是hc - append�
       (let ([p12 (hc-append p1 p2)]
             [p21 (hc-append p2 p1)])
         (vc-append p12 p21)))
-
      
-    > (checker (colorize (square 10) "red")
-               (colorize (square 10) "black"))
+> (checker (colorize (square 10) "red")
+           (colorize (square 10) "black"))
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_9.png)
 
@@ -161,7 +159,7 @@ let可以一次绑定多个定义，但这些定义不能相互引用。而let*�
         (four c4)))
 
      
-    > (checkerboard (square 10))
+> (checkerboard (square 10))
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_10.png)
 
@@ -183,7 +181,7 @@ let可以一次绑定多个定义，但这些定义不能相互引用。而let*�
 (define (series mk)
       (hc-append 4 (mk 5) (mk 10) (mk 20)))
      
-    > (series circle)
+> (series circle)
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_11.png)
 
@@ -222,12 +220,12 @@ Racket是一种词法限定的语言，这意味着无论何时将标识符用�
        (series (lambda (sz) (colorize (mk sz) "green")))
        (series (lambda (sz) (colorize (mk sz) "blue")))))
      
-    > (rgb-series circle)
+> (rgb-series circle)
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_14.png)
 
 ```
-    > (rgb-series square)
+> (rgb-series square)
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_15.png)
 
@@ -242,7 +240,7 @@ Here’s another example, where rgb-maker takes a function and returns a new one
                    (colorize (mk sz) "green")
                    (colorize (mk sz) "blue"))))
      
-    > (series (rgb-maker circle))
+> (series (rgb-maker circle))
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_16.png)
 
@@ -255,38 +253,37 @@ Here’s another example, where rgb-maker takes a function and returns a new one
 
 **8. Lists**
 
-Racket inherits much of its style from the language Lisp, whose name originally stood for “LISt Processor,” and lists remain an important part of Racket.
+Racket很大程度上继承了Lisp语言的风格，Lisp一词最初的意思是“列表处理器”，而列表仍然是Racket的重要组成部分。
+list函数接受任意数量的参数，并返回一个包含给定值的列表:
 
-The list function takes any number of arguments and returns a list containing the given values:
+```
+> (list "red" "green" "blue")
+'("red" "green" "blue")
+> (list (circle 10) (square 10))
+```
+'(![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_18.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_19.png))
 
-    > (list "red" "green" "blue")
+如您所见，列表打印为单引号跟一对圆括号，括号里面是列表元素。这里很容易混淆，因为括号同时用于表达式，如(circle10)和打印结果，如'("red" "green" "blue")。唯一的区别是列表打印前面有个单引号。
+如果您有一个列表，那么您最终会希望对每个元素进行处理。map函数接受一个列表和一个应用于列表的每个元素的函数，它返回一个新的列表，以组合函数的结果:
 
-    '("red" "green" "blue")
-    > (list (circle 10) (square 10))
-
-    '(image image)
-
-As you can see, a list prints as a single quote and then pair of parentheses wrapped around the printed form of the list elements. There’s room for confusion here, because parentheses are used for both expressions, such as (circle 10), and printed results, such as '("red" "green" "blue"). The quote is the key difference, as discussed elsewhere. To help emphasize the difference, in the documentation and in DrRacket, result parentheses are printed in blue, unlike expression parentheses.
-
-If you have a list, then you’ll eventually want to do something with each of the elements. The map function takes a list and a function to apply to each element of the list; it returns a new list to combine the function’s results:
-
-    (define (rainbow p)
+```
+(define (rainbow p)
       (map (lambda (color)
              (colorize p color))
            (list "red" "orange" "yellow" "green" "blue" "purple")))
-
      
-    > (rainbow (square 5))
+> (rainbow (square 5))
+```
+'(![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_20.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_21.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_22.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_23.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_24.png) ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_25.png))
 
-    '(image image image image image image)
+另一个处理列表的函数是apply。像map一样，它接受一个函数和一个列表，但是一个指定应用的函数应该一次接受所有的参数，而不是一个一个的。apply函数对于接受任意数量参数的函数特别有用，比如vc-append:
 
-Another function that works with lists is apply. Like map, it takes a function and a list, but a function given to apply should take all of the arguments at once, instead of each one individually. The apply function is especially useful with functions that take any number of arguments, such as vc-append:
+```
+> (apply vc-append (rainbow (square 5)))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_26.png)
 
-    > (apply vc-append (rainbow (square 5)))
-
-    image
-
-Note that (vc-append (rainbow (square 5))) would not work, because vc-append does not want a list as an argument; it wants a picture as an argument, and it is willing to accept any number of them. The apply function bridges the gap between a function that wants many arguments and a list of those arguments as a single value.
+注意，(vc-append (rainbow (square 5))不能工作，因为vc-append不需要一个列表作为参数;它想要一张图片作为参数，而且它愿意接受任何数量的图片。apply函数将需要多个参数的函数和作为单个值的参数列表之间的空隙连接起来。
 
 **9. Modules**
 
