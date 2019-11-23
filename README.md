@@ -287,127 +287,131 @@ list函数接受任意数量的参数，并返回一个包含给定值的列表:
 
 **9. Modules**
 
-Since your program in the definitions window starts with
+在你的定义窗口，程序是这么开头的
 
-    #lang slideshow
+```
+#lang slideshow
+```
 
-all of the code that you put in the definitions window is inside a module. Furthermore, the module initially imports everything from the module designated by slideshow, which exports picture-making functions as well as more commonly used functions such as list and map.
+定义窗口的所有代码都属于一个模块。这个模块会在初始时导入slideshow模块，比如图片生成函数以及其他常用函数，如list和map。
+要导入外部库，需要使用require语句。例如，库pict/flash提供了一个填充flash函数:
 
-To import additional libraries, use the require form. For example, the library pict/flash provides a filled-flash function:
-
-    (require pict/flash)
-
+```
+(require pict/flash)
      
-    > (filled-flash 40 30)
+> (filled-flash 40 30)
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_27.png)
 
-    image
 
-Modules are named and distributed in various ways:
+模块有多种全名及发布方式:
+    
+- 有些模块是Racket发行版自带，安装在collects目录下。例如，模块名pict/flash表示此模块是在pict文件夹下的"flash.rkt"中实现。当一个模块名不包含斜杠时，它指的是"main.rkt"文件。
 
-    Some modules are packaged in the Racket distribution or otherwise installed into a hierarchy of collections. For example, the module name pict/flash means “the module implemented in the file "flash.rkt" that is located in the "pict" collection.” When a module name includes no slash, then it refers to a "main.rkt" file.
+    
+- 一些模块作为包分发。可以通过DrRacket菜单中的安装选项进行安装，或者通过raco pkg命令安装。
 
-    Some collections of modules are distributed as packages. Packages can be installed using the Install Package... menu item in DrRacket’s File menu, or they can be installed using the raco pkg command-line tool. For example, installing the "avl" package makes the avl module available.
+    
+- 一些模块依赖于其他模块，但不是必须属于何特定的集合或包。例如，在DrRacket中，如果你将你的定义保存到文件“quick.rkt”中。然后加上这一行
 
-    Packages can be registered at https://pkgs.racket-lang.org/, or they can be installed directly from a Git repository, web site, file, or directory. See Package Management in Racket for more information about packages.
+```
+(provide rainbow square)
+```
 
-                To save your definitions, use DrRacket’s Save Definitions menu item.
+然后你可以在DrRacket中新建程序“use.rkt”，并与"quick.rkt"在同一目录下:
 
-    Some modules live relative to other modules, without necessarily belonging to any particular collection or package. For example, in DrRacket, if you save your definitions so far in a file "quick.rkt" and add the line
+```
+#lang racket
+(require "quick.rkt")
+(rainbow (square 5))
+```
 
-        (provide rainbow square)
+当你运行“use.rkt”，就会输出一个彩虹方块。注意,“use.rkt”仅仅导入了racket，而racket本身不提供任何图像生成函数，而是提供了require和函数调用语法。
 
-    then you can open a new tab or window in DrRacket, type the new program "use.rkt" in the same directory as "quick.rkt":
-
-        #lang racket
-        (require "quick.rkt")
-        (rainbow (square 5))
-
-    and when you run "use.rkt", a rainbow list of squares is the output. Note that "use.rkt" is written using the initial import racket, which does not supply any picture-making functions itself—but does provide require and the function-calling syntax.
-
-Racketeers typically write new programs and libraries as modules that import each other through relative paths and collection-based paths. When a program or library developed this way seems useful to others, it can be registered as a package, especially if the implementation is hosted in a Git repository.
+Racket程序员通常将程序和库写成模块，然后通达相对路径相互引用。这种开发方式还可以将其注册为包，方便其他人使用。
 
 **10. Macros**
 
-Here’s another library to try:
+这是另外一个库:
 
-    (require slideshow/code)
-
+```
+(require slideshow/code)
      
-    > (code (circle 10))
+> (code (circle 10))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_28.png)
 
-    [image]
+其结果不是圆，而是代码的图片，如果将其用作表达式，则会生成一个圆。换句话说，code不是一个函数，而是一种生成图片的语法;括住code的括号中间的东西不是表达式，而是code的语法形式。
 
-Instead of a circle, the result is a picture of the code that, if it were used as an expression, would produce a circle. In other words, code is not a function, but instead a new syntactic form for creating pictures; the bit between the opening parenthesis with code is not an expression, but instead manipulated by the code syntactic form.
+这就解释了我们在上一节中提到的racket提供了require和函数调用语法的含义。库不限于包含函数，还可以定义新的语法形式。从这个意义上说，racket不能算是一种语言，而是一种可以创造语言的语言，可以非常方便的扩展或创建全新的语言。
 
-This helps explain what we meant in the previous section when we said that racket provides require and the function-calling syntax. Libraries are not restricted to exporting values, such as functions; they can also define new syntactic forms. In this sense, Racket isn’t exactly a language at all; it’s more of an idea for how to structure a language so that you can extend it or create entirely new languages.
+一种创造新语法形式的方法是通过define-syntax和syntax-rules:
 
-One way to introduce a new syntactic form is through define-syntax with syntax-rules:
-
-    (define-syntax pict+code
+```
+(define-syntax pict+code
       (syntax-rules ()
         [(pict+code expr)
          (hc-append 10
                     expr
                     (code expr))]))
-
      
-    > (pict+code (circle 10))
+> (pict+code (circle 10))
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_29.png)
 
-    [image]
+这种是一个宏定义。(pict+code expr)部分代表宏的匹配模式，在程序中匹配上的部分会被替换成相应的模板，即(hc-append 10 expr (code expr))。具体来说，(pict+code (circle 10))中的(circle 10)将与expr匹配，整个表达式替换为(hc-append 10 (circle 10) (code (circle 10))。
 
-This kind of definition is a macro. The (pict+code expr) part is a pattern for uses of the macro; instances of the pattern in a program are replaced by instances of the corresponding template, which is (hc-append 10 expr (code expr)). In particular, (pict+code (circle 10)) matches the pattern with (circle 10) as expr, so it is replaced with (hc-append 10 (circle 10) (code (circle 10))).
+当然，这种语法扩展是一把双刃剑：它让你随心所欲的发明一种新的语言的同时，也让别人更难理解。
 
-Of course, this sort of syntactic extension cuts both ways: inventing a new language can make it easier to say what you want, but harder for others to understand. As it happens, the developers of Racket are constantly giving talks and writing papers that involve Racket code, and it’s worthwhile for everyone who works on those products to know about code.
+实际上，如果你查看一下这个文档的源代码。你会看到它除了以#lang开头，其他地方看起来不太像Racket。尽管如此，这份文档的确是用Racket撰写的。为了撰写这份文档，我们使用了大量的syntax-rules来扩展语法
 
-In fact, you might want to take a look at the source of this document. You’ll see that it starts with #lang, but otherwise doesn’t look a lot like Racket; nevertheless, we build this document by running its source as a Racket program. We have to use a lot more than syntax-rules to extend Racket’s syntax enough for writing documents, but Racket’s syntactic extension can take you a long way.
+**11. 对象**
 
-**11. Objects**
+对象系统是另一个复杂的语言扩展的例子，值得Racket用户学习和使用。对象有时比函数更好，即使您使用lambda，而且对象对于图形用户界面更为有效。Racket的用户界面接口和图形系统就是用类和对象实现的。
 
-An object system is another example of a sophisticated language extension that is worth learning and using for Racket users. Objects are sometimes better than functions, even when you have lambda, and objects work especially well for graphical user interfaces. The API for Racket’s GUI and graphics system is expressed in terms of objects and classes.
+类系统本身由racket/class库实现，racket/gui/base库提供图形用户界面和绘图类。这些类习惯以%结尾:
 
-The class system itself is implemented by the racket/class library, and the racket/gui/base library provides the GUI and drawing classes. By convention, the classes are given names that end with %:
-
-    (require racket/class
-             racket/gui/base)
+```
+(require racket/class
+         racket/gui/base)
     (define f (new frame% [label "My Art"]
                           [width 300]
                           [height 300]
                           [alignment '(center center)]))
-
      
-    > (send f show #t)
+> (send f show #t)
+```
 
-The new form creates an instance of a class, where initialization arguments like label and width are provided by name. The send form calls a method of the object, such as show, with arguments after the method name; the argument #t in this case is the boolean constant “true.”
+new语句创建一个类的实例，并对label和width等参数进行初始化。send语句调用对象的一个方法，例如show，方法名后面跟着参数，本例中的参数#t是布尔常量“true”。
 
-Pictures generated with slideshow encapsulate a function that uses the graphics toolbox’s drawing commands to render the picture to a drawing context, such as a canvas in a frame. The make-pict-drawer function from slideshow exposes a picture’s drawing function. We can use make-pict-drawer in a canvas-painting callback to draw a picture into a canvas:
+就像把一副画布嵌入到画框中，图形化工具箱可以把图片呈现到绘图上下文中。我们可以使用slideshow中的make-pict-drawer函数以回调的方式把一副图片嵌入到画布中:
 
-    (define (add-drawing p)
+```
+(define (add-drawing p)
       (let ([drawer (make-pict-drawer p)])
         (new canvas% [parent f]
                      [style '(border)]
                      [paint-callback (lambda (self dc)
                                        (drawer dc 0 0))])))
-
      
-    > (add-drawing (pict+code (circle 10)))
+> (add-drawing (pict+code (circle 10)))
+#(struct:object:canvas% ...)
 
-    #(struct:object:canvas% ...)
-    > (add-drawing (colorize (filled-flash 50 30) "yellow"))
+> (add-drawing (colorize (filled-flash 50 30) "yellow"))
+#(struct:object:canvas% ...)
+```
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_30.png)
 
-    #(struct:object:canvas% ...)
+每个画布都把画框填满，这是画框对组件默认的处理方式。
 
-    [image]
+**12. 接下来**
 
-Each canvas stretches to fill an equal portion of the frame, because that’s how a frame manages its children by default.
+这篇教程刻意回避了许多Lisp和Racket的经典内容：前缀表达式、符号、引用、quasiquoting lists, eval, first-class continuations，所有这些语法实际都是lambda的变形。虽然这些都是Racket的一部分，但它们并不是Racket编程经常用到的知识。
 
-**12. Where to Go From Here**
+相反，Racket程序员通常使用函数、记录、对象、异常、正则表达式、模块和线程进行编程。也就是说，Racket并不志在做一个“极简”语言，而是通过大量的扩展库和工具提供丰富的支持。
 
-This introduction to Racket purposely avoids many of the traditional ways of introducing and distinguishing Lisp or Scheme: prefix arithmetic notation, symbols, quoting and quasiquoting lists, eval, first-class continuations, and the idea that all syntax is really just a lambda in disguise. While those are all part of Racket, they are not the main ingredients of day-to-day programming in Racket.
+如果你是编程新手，或者你只有书本的知识，我们推荐你阅读《How to Design Programs》。如果你已经读过这本书，或者你想知道这本书会能干啥，可以去看看《Continue: Web Applications in Racket》。
 
-Instead, Racket programmers typically program with functions, records, objects, exceptions, regular expressions, modules, and threads. That is, instead of a “minimalist” language—which is the way that Scheme is often described—Racket offers a rich language with an extensive set of libraries and tools.
+对于有经验的程序员，想要从系统的角度来继续学习Racket，你的下一站应该是《More: Systems Programming with Racket.》
 
-If you are new to programming or if you have the patience to work through a textbook, we recommend reading How to Design Programs. If you have already read it, or if you want to see where the book will take you, then see Continue: Web Applications in Racket.
-
-For experienced programmers, to continue touring Racket from a systems-oriented perspective instead of pictures, your next stop is More: Systems Programming with Racket.
-
-To instead start learning about the full Racket language and tools in depth, move on to The Racket Guide.
+想要对Racket语言和工具有更全面的了解，可以去看《The Racket Guide》。
