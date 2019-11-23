@@ -229,8 +229,6 @@ Racket是一种词法限定的语言，这意味着无论何时将标识符用�
 ```
 ![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_15.png)
 
-Here’s another example, where rgb-maker takes a function and returns a new one that remembers and uses the original function.
-
 这里是另一个例子，其中rgb-maker获取一个函数并返回一个新的函数，该函数记住并使用原始函数。
 
 ```
