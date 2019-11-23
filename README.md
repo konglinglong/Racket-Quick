@@ -339,7 +339,7 @@ Racket程序员通常将程序和库写成模块，然后通达相对路径相�
      
 > (code (circle 10))
 ```
-![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_28.png)
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/img0.png)
 
 其结果不是圆，而是代码的图片，如果将其用作表达式，则会生成一个圆。换句话说，code不是一个函数，而是一种生成图片的语法;括住code的括号中间的东西不是表达式，而是code的语法形式。
 
@@ -357,7 +357,7 @@ Racket程序员通常将程序和库写成模块，然后通达相对路径相�
      
 > (pict+code (circle 10))
 ```
-![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_29.png)
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/img1.png)
 
 这种是一个宏定义。(pict+code expr)部分代表宏的匹配模式，在程序中匹配上的部分会被替换成相应的模板，即(hc-append 10 expr (code expr))。具体来说，(pict+code (circle 10))中的(circle 10)将与expr匹配，整个表达式替换为(hc-append 10 (circle 10) (code (circle 10))。
 
@@ -400,7 +400,7 @@ new语句创建一个类的实例，并对label和width等参数进行初始化�
 > (add-drawing (colorize (filled-flash 50 30) "yellow"))
 #(struct:object:canvas% ...)
 ```
-![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/pict_30.png)
+![image](https://github.com/konglinglong/Racket-Quick/blob/master/images/img2.png)
 
 每个画布都把画框填满，这是画框对组件默认的处理方式。
 
